@@ -540,3 +540,176 @@
         preloader();
     });
 })(jQuery);
+
+
+/* 1) HİKAYE VERİLERİ — kapak görseli + sıralı slaytlar */
+const IA_STORIES = [
+  {
+    title: "Oyun Odası",
+    cover: "images/highlights/oda-cover.jpg",
+    slides: [
+      {src: "images/highlights/oda-1.jpg", duration: 3500},
+      {src: "images/highlights/oda-2.jpg", duration: 3500},
+      {src: "images/highlights/oda-3.jpg", duration: 3500},
+    ],
+  },
+  {
+    title: "Anaokulu🍭",
+    cover: "images/highlights/anaokulu-cover.jpg",
+    slides: [
+      {src: "images/highlights/anaokulu-1.jpg", duration: 3500},
+      {src: "images/highlights/anaokulu-2.jpg", duration: 3500},
+    ],
+  },
+  {
+    title: "Yorumlar",
+    cover: "images/highlights/yorumlar-cover.jpg",
+    slides: [
+      {src: "images/highlights/yorumlar-1.jpg", duration: 3500},
+      {src: "images/highlights/yorumlar-2.jpg", duration: 3500},
+    ],
+  },
+  {
+    title: "Çalışmalar",
+    cover: "images/highlights/calismalar-cover.jpg",
+    slides: [
+      {src: "images/highlights/calismalar-1.jpg", duration: 3500},
+      {src: "images/highlights/calismalar-2.jpg", duration: 3500},
+      {src: "images/highlights/calismalar-3.jpg", duration: 3500},
+    ],
+  },
+  {
+    title: "Soru & Cevap",
+    cover: "images/highlights/soru-cevap-cover.jpg",
+    slides: [
+      {src: "images/highlights/soru-cevap-1.jpg", duration: 3500},
+      {src: "images/highlights/soru-cevap-2.jpg", duration: 3500},
+    ],
+  },
+];
+
+/* 2) HIGHLIGHT ŞERİDİNİ OLUŞTUR */
+const wrap = document.getElementById('ia-highlights');
+wrap.innerHTML = IA_STORIES.map((s, i) => `
+  <div class="ia-highlight" data-idx="${i}" title="${s.title}">
+    <div class="ia-ring"><img src="${s.cover}" alt="${s.title} - Psikolog İrem Aydın"></div>
+    <span>${s.title}</span>
+  </div>
+`).join('');
+
+/* 3) MODAL DAVRANIŞI */
+const modal = document.getElementById('ia-story-modal');
+const img   = document.getElementById('ia-story-image');
+const title = document.getElementById('ia-story-title');
+const progress = document.getElementById('ia-progress');
+const closeBtn = document.getElementById('ia-close');
+const prevZone = document.getElementById('ia-prev');
+const nextZone = document.getElementById('ia-next');
+const backdrop = document.getElementById('ia-story-backdrop');
+
+let currentStory = 0;
+let currentSlide = 0;
+let timer = null, ticker = null;
+
+function openStory(sIndex) {
+  currentStory = sIndex;
+  currentSlide = 0;
+  // progress barları hazırla
+  progress.innerHTML = IA_STORIES[sIndex].slides.map(() => `<span></span>`).join('');
+  title.textContent = IA_STORIES[sIndex].title;
+  modal.classList.add('is-open');
+  modal.setAttribute('aria-hidden', 'false');
+  showSlide();
+}
+
+function closeStory() {
+  modal.classList.remove('is-open');
+  modal.setAttribute('aria-hidden', 'true');
+  clearTimers();
+}
+
+function clearTimers() {
+  if (timer)  { clearTimeout(timer); timer = null; }
+  if (ticker) { clearInterval(ticker); ticker = null; }
+}
+
+function showSlide() {
+  clearTimers();
+  const story = IA_STORIES[currentStory];
+  const slide = story.slides[currentSlide];
+  img.src = slide.src;
+
+  // progress güncelle
+  [...progress.children].forEach((bar, i) => {
+    if (i < currentSlide) bar.style.width = '100%';
+    else bar.style.width = '0%';
+  });
+
+  const activeBar = progress.children[currentSlide];
+  const duration = Math.max(1800, slide.duration || 3000); // min 1.8s
+  const start = performance.now();
+
+  ticker = setInterval(() => {
+    const pct = Math.min(1, (performance.now() - start) / duration);
+    activeBar.style.width = (pct * 100).toFixed(1) + '%';
+  }, 80);
+
+  timer = setTimeout(nextSlide, duration);
+}
+
+function nextSlide() {
+  const story = IA_STORIES[currentStory];
+  if (currentSlide < story.slides.length - 1) {
+    currentSlide++;
+    showSlide();
+  } else {
+    // sonraki hikaye
+    if (currentStory < IA_STORIES.length - 1) {
+      openStory(currentStory + 1);
+    } else {
+      closeStory();
+    }
+  }
+}
+
+function prevSlide() {
+  if (currentSlide > 0) {
+    currentSlide--;
+    showSlide();
+  } else if (currentStory > 0) {
+    openStory(currentStory - 1);
+    // son slayta atla
+    currentSlide = IA_STORIES[currentStory].slides.length - 1;
+    showSlide();
+  }
+}
+
+/* 4) ETKİLEŞİMLER */
+wrap.addEventListener('click', (e) => {
+  const item = e.target.closest('.ia-highlight');
+  if (!item) return;
+  const idx = +item.dataset.idx;
+  openStory(idx);
+});
+
+nextZone.addEventListener('click', nextSlide);
+prevZone.addEventListener('click', prevSlide);
+closeBtn.addEventListener('click', closeStory);
+backdrop.addEventListener('click', closeStory);
+
+// Klavye
+document.addEventListener('keydown', (e) => {
+  if (!modal.classList.contains('is-open')) return;
+  if (e.key === 'Escape') closeStory();
+  if (e.key === 'ArrowRight') nextSlide();
+  if (e.key === 'ArrowLeft')  prevSlide();
+});
+
+// Kaydırma (mobil)
+let touchX = 0;
+modal.addEventListener('touchstart', e => touchX = e.touches[0].clientX);
+modal.addEventListener('touchend', e => {
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (dx > 40) prevSlide();
+  if (dx < -40) nextSlide();
+});
