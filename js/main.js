@@ -586,6 +586,14 @@ const IA_STORIES = [
       {src: "images/highlights/soru-cevap-2.jpg", duration: 3500},
     ],
   },
+  {
+    title: "Online Seanslar",
+    cover: "images/highlights/online-seanslar-cover.jpg",
+    slides: [
+      {src: "images/highlights/online-seanslar-1.jpg", duration: 3500},
+      {src: "images/highlights/online-seanslar-2.jpg", duration: 3500},
+    ],
+  },
 ];
 
 /* 2) HIGHLIGHT ŞERİDİNİ OLUŞTUR */
@@ -713,3 +721,181 @@ modal.addEventListener('touchend', e => {
   if (dx > 40) prevSlide();
   if (dx < -40) nextSlide();
 });
+
+
+
+/* --------- Instagram-benzeri post grid --------- */
+
+// 6 postluk örnek veri (görsel yollarını kendi projene göre ayarla)
+const IG_POSTS = [
+  { src: "images/blog/blog-1.png", alt:"Danışan odası", likes: 421, comments: 36, date: "12 Eylül 2025", caption: "Ay olamıyorsan bir yıldız ol ya da bir mum..Karanlık olma ✨ 🕯️⭐️" },
+  { src: "images/blog/blog-2.png", alt:"Seans",         likes: 389, comments: 18, date: "15 Eylül 2025", caption: "İyi ki psikoloğum 🤍 10 Mayıs Psikologlar Günümüz Kutlu Olsun 💙" },
+  { src: "images/blog/blog-3.png", alt:"Ofis",         likes: 501, comments: 44, date: "21 Eylül 2025", caption: "Kırıldığın yerden sızan ışık, seni yeniden tanımlayabilir 🌔🌘" },
+  { src: "images/blog/blog-4.png", alt:"Oyun terapisi",likes: 612, comments: 57, date: "25 Eylül 2025", caption: "Kendi iç huzurunu bulabilen, her yerde evindedir. 🌿" },
+  { src: "images/blog/blog-5.png", alt:"WISC-R",       likes: 333, comments: 22, date: "28 Eylül 2025", caption: "Hayatta yaşadığımız en zorlu anlarda bile boş tarafın yanında her zaman dolu tarafın olacağını, boş ve dolu gibi iyi ve kötünün de birbirini tamamladığını unutmayalım 🌸 En zorlu zamanlarda bile kendimizi tebrik edecek kendimize sarılacak kaynaklarımızı unutmayalım 🌸" },
+  { src: "images/blog/blog-6.png", alt:"Anakulu",      likes: 447, comments: 29, date: "30 Eylül 2025", caption: "✨“Kışın ortasında, içimde yenilmez bir yaz olduğunu sonunda öğrendim.” Albert Camus – Sisifos Söyleni" },
+];
+
+// Grid’e bas
+const $grid = document.getElementById('igGrid');
+$grid.innerHTML = IG_POSTS.map((p, i) => `
+  <button class="ia-ig-item" data-index="${i}" aria-label="Gönderiyi aç">
+    <img src="${p.src}" alt="${p.alt}">
+    <div class="ia-ig-overlay">❤ ${p.likes}  • 💬 ${p.comments}</div>
+  </button>
+`).join('');
+
+// Modal elemanları
+const $modal   = document.getElementById('igModal');
+const $media   = document.getElementById('igMedia');
+const $caption = document.getElementById('igCaption');
+const $stats   = document.getElementById('igStats');
+const $date    = document.getElementById('igDate');
+const $prev    = $modal.querySelector('.ia-ig-prev');
+const $next    = $modal.querySelector('.ia-ig-next');
+
+let igIndex = 0;
+
+function openIg(i){
+  igIndex = (i + IG_POSTS.length) % IG_POSTS.length;
+  showIg(igIndex);
+  $modal.classList.add('is-open');
+  $modal.setAttribute('aria-hidden', 'false');
+  document.body.style.overflow = 'hidden';
+}
+function closeIg(){
+  $modal.classList.remove('is-open');
+  $modal.setAttribute('aria-hidden', 'true');
+  document.body.style.overflow = '';
+}
+function showIg(i){
+  const p = IG_POSTS[i];
+  $media.src = p.src;
+  $media.alt = p.alt || "";
+  $caption.textContent = p.caption || "";
+  $stats.textContent = `❤ ${p.likes}   •   💬 ${p.comments}`;
+  $date.textContent = p.date || "";
+}
+function nextIg(){ openIg(igIndex + 1); }
+function prevIg(){ openIg(igIndex - 1); }
+
+// Grid click
+$grid.addEventListener('click', (e)=>{
+  const btn = e.target.closest('.ia-ig-item');
+  if(!btn) return;
+  openIg(parseInt(btn.dataset.index, 10));
+});
+
+// Modal nav & kapat
+$modal.addEventListener('click', (e)=>{
+  if(e.target.matches('[data-close]')) { closeIg(); }
+});
+$next.addEventListener('click', nextIg);
+$prev.addEventListener('click', prevIg);
+
+// ESC & ok tuşları
+window.addEventListener('keydown', (e)=>{
+  if(!$modal.classList.contains('is-open')) return;
+  if(e.key === 'Escape') closeIg();
+  else if(e.key === 'ArrowRight') nextIg();
+  else if(e.key === 'ArrowLeft') prevIg();
+});
+
+// Basit dokunma swipe
+(function(){
+  let x0=null;
+  $modal.addEventListener('touchstart', (e)=> x0 = e.touches[0].clientX, {passive:true});
+  $modal.addEventListener('touchend', (e)=>{
+    if(x0===null) return;
+    const dx = e.changedTouches[0].clientX - x0;
+    if(Math.abs(dx) > 60) (dx<0 ? nextIg() : prevIg());
+    x0=null;
+  }, {passive:true});
+})();
+
+
+// ---- Story state ----
+let storyIndex = 0;               // aktif story index’in
+const STORY_DURATION = 5000;      // her story süresi (ms)
+let storyTimer = null;
+let storyPaused = false;
+
+function showStory(i){
+  storyIndex = (i + STORIES.length) % STORIES.length; // STORIES = senin story dizin
+  const s = STORIES[storyIndex];
+
+  // görseli yükle
+  const imgEl = document.querySelector('.ia-story-content img');
+  imgEl.src = s.src;
+  imgEl.alt = s.alt || '';
+
+  // progress reset
+  resetProgress();
+  startProgress();
+}
+
+function nextStory(){
+  showStory(storyIndex + 1);
+}
+function prevStory(){
+  showStory(storyIndex - 1);
+}
+
+// ---- Progress / Autoplay ----
+function startProgress(){
+  clearTimeout(storyTimer);
+  storyTimer = setTimeout(()=> {
+    if (!storyPaused) nextStory();
+  }, STORY_DURATION);
+
+  // progress bar görseli için (istersen)
+  const bars = document.querySelectorAll('.ia-progress > span');
+  bars.forEach((b, idx)=>{
+    b.style.width = (idx < storyIndex ? '100%' : '0%');
+    if(idx === storyIndex){
+      // animasyon
+      b.style.transition = `width ${STORY_DURATION}ms linear`;
+      requestAnimationFrame(()=> b.style.width = '100%');
+    }else{
+      b.style.transition = 'none';
+    }
+  });
+}
+
+function resetProgress(){
+  clearTimeout(storyTimer);
+  const bars = document.querySelectorAll('.ia-progress > span');
+  bars.forEach(b=>{ b.style.transition='none'; b.style.width='0%'; });
+}
+
+// ---- Elle kontrol (tıkla / ok tuşları / ESC) ----
+const tapzones = document.querySelector('.ia-story-tapzones');
+if (tapzones){
+  tapzones.addEventListener('click', (e)=>{
+    if (e.target.closest('.prev')) { prevStory(); }
+    else if (e.target.closest('.next')) { nextStory(); }
+  });
+}
+
+// Modal açıkken ok tuşlarıyla gezin
+window.addEventListener('keydown', (e)=>{
+  const open = document.querySelector('.ia-story-modal.is-open');
+  if(!open) return;
+  if (e.key === 'ArrowRight') nextStory();
+  else if (e.key === 'ArrowLeft') prevStory();
+  else if (e.key === ' ') { // boşluk: durdur/başlat
+    e.preventDefault();
+    storyPaused = !storyPaused;
+    if (!storyPaused) startProgress(); else clearTimeout(storyTimer);
+  } else if (e.key === 'Escape') {
+    // kapatma fonksiyonunu çağır
+    closeStoryModal && closeStoryModal();
+  }
+});
+
+// Hover’da durdur (isteğe bağlı)
+const storyFrame = document.querySelector('.ia-story-frame');
+if (storyFrame){
+  storyFrame.addEventListener('mouseenter', ()=>{ storyPaused = true; clearTimeout(storyTimer); });
+  storyFrame.addEventListener('mouseleave', ()=>{ storyPaused = false; startProgress(); });
+}
