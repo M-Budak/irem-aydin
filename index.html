@@ -327,6 +327,7 @@
   <div class="ia-story-backdrop" id="ia-story-backdrop"></div>
 
   <div class="ia-story-frame" role="dialog" aria-modal="true" aria-label="Hikayeler">
+    <!-- sağ/sol tıklama alanları -->
     <div class="ia-story-topbar">
       <div class="ia-progress" id="ia-progress"></div>
       <button class="ia-close" id="ia-close" aria-label="Kapat">×</button>
@@ -399,7 +400,7 @@
                                                     </div>
                                                     <span class="sub"></span>
                                                 </div>
-                                                <p>Danışan Dönüşleri</p>
+                                                <p>Danışan Seansı</p>
                                             </div>
                                         </div>
                                         <div class="counter-item has-icon">
@@ -411,7 +412,7 @@
                                                     <div class="odometer style-1-3">10
                                                     </div>
                                                 </div>
-                                                <p>Tamamlanan Seans</p>
+                                                <p>Danışan Dönüşleri</p>
                                             </div>
                                         </div>
                                         <div class="counter-item has-icon">
@@ -774,6 +775,51 @@
 
             </section>
             <!-- /.section-testimonials -->
+
+
+<!-- Instagram Postları -->
+<section class="ia-ig">
+  <div class="ia-ig-head">
+    <h3>Instagram Postları</h3>
+    <a class="ia-ig-link" href="https://instagram.com/iremaydnp psikoloji" target="_blank" rel="noopener">
+      Profili Gör
+    </a>
+  </div>
+
+  <!-- Grid otomatik JS ile dolacak -->
+  <div id="igGrid" class="ia-ig-grid" aria-live="polite"></div>
+</section>
+
+<!-- Instagram tarzı modal görüntüleyici -->
+<div id="igModal" class="ia-ig-modal" aria-hidden="true">
+  <div class="ia-ig-backdrop" data-close></div>
+
+  <div class="ia-ig-view" role="dialog" aria-modal="true" aria-label="Instagram gönderisi">
+    <button class="ia-ig-close" aria-label="Kapat" data-close>×</button>
+
+    <button class="ia-ig-nav ia-ig-prev" aria-label="Önceki gönderi">‹</button>
+    <figure class="ia-ig-media">
+      <img id="igMedia" alt="" />
+    </figure>
+
+    <aside class="ia-ig-meta">
+      <div class="ia-ig-user">
+        <img class="ia-ig-avatar" src="images/ia-avatar.png" alt="İrem Aydın" />
+        <div>
+          <strong>İrem Aydın Psikoloji</strong>
+          <span class="ia-ig-place">Aydın</span>
+        </div>
+      </div>
+
+      <div id="igCaption" class="ia-ig-caption"></div>
+      <div id="igStats" class="ia-ig-stats"></div>
+      <div id="igDate" class="ia-ig-date"></div>
+    </aside>
+    <button class="ia-ig-nav ia-ig-next" aria-label="Sonraki gönderi">›</button>
+  </div>
+</div>
+
+
 
             <!-- .section-news -->
             <section class="section-news tf-spacing-1 style-pagination">
