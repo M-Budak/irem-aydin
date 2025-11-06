@@ -8298,6 +8298,61 @@ input[value=theme-dark] + label {
   backdrop-filter:blur(4px);
 }
 
+/* ====== HIGHLIGHTS — Masaüstü şablonu (6 kart tek satır) ====== */
+@media (min-width: 981px) {
+  /* Şerit: 6 kolon grid, taşma yok */
+  .ia-highlights{
+    display: grid;
+    grid-template-columns: repeat(6, minmax(150px, 1fr));
+    gap: 18px;
+    padding: 14px 8px;
+    overflow: visible;   /* masaüstünde kaydırma yok */
+  }
+
+  /* Kart görünümü: dikdörtgen + yumuşak köşe */
+  .ia-highlight{
+    width: auto;                 /* grid’e bırak */
+    aspect-ratio: 4/3;           /* yatay dikdörtgen */
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0,0,0,.06);
+    transition: transform .15s ease, box-shadow .2s ease;
+    background: #fff;
+    text-align: left;            /* başlık hizası */
+  }
+  .ia-highlight:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0,0,0,.12);
+  }
+
+  /* Yuvarlak “ring” yerine tam görsel doldur */
+  .ia-ring{
+    position: absolute; inset: 0;
+    padding: 0; border-radius: inherit;
+    background: none; overflow: hidden;
+    width: 100%; height: 100%;
+  }
+  .ia-ring img{
+    width: 100%; height: 100%; object-fit: cover; display: block;
+  }
+
+  /* Başlık etiketi: altta yarı saydam bant */
+  .ia-highlight span{
+    position: absolute; left: 10px; right: 10px; bottom: 10px;
+    padding: 6px 10px; border-radius: 12px;
+    background: rgba(255,255,255,.85);
+    font-weight: 600; font-size: 14px; line-height: 1.15;
+    color: #5a463b; text-align: center;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    backdrop-filter: blur(4px);
+  }
+}
+
+/* Küçük ekranlarda (mobil) otomatik olarak ESKİ yuvarlak story tasarımına dönüyor. */
+
+
 /* Küçük ekranlarda kartı biraz küçült */
 @media (max-width:480px){
   .ia-highlight{ width:140px; }
@@ -8335,8 +8390,9 @@ input[value=theme-dark] + label {
 
 /* Tap bölgeleri üst barda başlamaSın – çarpının önünü kapatmayalım */
 .ia-story-tapzones{
-  position:absolute; inset:0; top:5px;  /* topbar yüksekliği kadar boşluk */
-  z-index:2;
+  position: absolute; inset: 0;
+  top: 52px;              /* 48–56px aralığı güvenli */
+  z-index: 2;
 }
 .ia-story-tapzones > div{ cursor:pointer; }
 
@@ -8357,8 +8413,56 @@ input[value=theme-dark] + label {
   display:flex; justify-content:space-between; gap:10px; padding:0 12px; font-size:13px;
 }
 
+/* Mobilde: gerçek Insta tarzı yuvarlak highlight */
+@media (max-width: 980px){
+  .ia-highlights{
+    display: flex;
+    gap: 12px;
+    padding: 12px 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .ia-highlights::-webkit-scrollbar{ display:none; }
 
+  .ia-highlight{
+    flex: 0 0 86px;
+    width: 86px;             /* kare */
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;      /* daire */
+    background: transparent; /* zemini kaldır */
+    box-shadow: none;
+    position: relative;
+    overflow: visible;       /* ring dışına taşabilir */
+  }
 
+  /* ring efekti */
+  .ia-ring{
+    width: 86px; height: 86px;
+    padding: 3px;
+    border-radius: 50%;
+    background:
+      radial-gradient(#fff 60%, transparent 61%) padding-box,
+      conic-gradient(#ff6b6b, #ffcc70, #8be9fd, #ff6b6b) border-box;
+  }
+  .ia-ring img{
+    width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+  }
+
+  /* başlık halkaların ALTINDA küçük metin */
+  .ia-highlight span{
+    position: static;
+    display: block;
+    margin-top: 6px;
+    padding: 0;
+    background: transparent;
+    font-size: 12px;
+    font-weight: 600;
+    color: #5a463b;
+    text-align: center;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    backdrop-filter: none;
+  }
+}
 
 
 /* ===== Instagram Grid ===== */
