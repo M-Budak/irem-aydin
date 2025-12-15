@@ -553,14 +553,14 @@ const IA_STORIES = [
       {src: "images/highlights/oda-3.jpg", duration: 3500},
     ],
   },
-  {
-    title: "Anaokulu🍭",
-    cover: "images/highlights/anaokulu-cover.jpg",
-    slides: [
-      {src: "images/highlights/anaokulu-1.jpg", duration: 3500},
-      {src: "images/highlights/anaokulu-2.jpg", duration: 3500},
-    ],
-  },
+//   {
+//     title: "Anaokulu🍭",
+//     cover: "images/highlights/anaokulu-cover.jpg",
+//     slides: [
+//       {src: "images/highlights/anaokulu-1.jpg", duration: 3500},
+//       {src: "images/highlights/anaokulu-2.jpg", duration: 3500},
+//     ],
+//   },
   {
     title: "Yorumlar",
     cover: "images/highlights/yorumlar-cover.jpg",
@@ -899,3 +899,4 @@ if (storyFrame){
   storyFrame.addEventListener('mouseenter', ()=>{ storyPaused = true; clearTimeout(storyTimer); });
   storyFrame.addEventListener('mouseleave', ()=>{ storyPaused = false; startProgress(); });
 }
+
